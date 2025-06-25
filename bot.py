@@ -7,22 +7,22 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
 import sys
 
-# Инициализация
+
 bot = Bot(token="7780127425:AAH0Ll3vO6xiljTdJPIT-epdh-P5VgvZ8vY")
 dp = Dispatcher()
 scheduler = AsyncIOScheduler()
 
-# Хранение данных
+
 user_tasks = {}  # {user_id: {"today": [], "tomorrow": [], "week": [], "deadlines": {}}}
 
-# Состояния FSM
+
 class TaskStates(StatesGroup):
     waiting_task_type = State()
     waiting_task_text = State()
     waiting_deadline_text = State()
     waiting_deadline_date = State()
 
-# Клавиатуры
+
 def get_main_keyboard():
     buttons = [
         [types.KeyboardButton(text="📝 Добавить задачу")],
@@ -47,18 +47,18 @@ def get_cancel_keyboard():
         resize_keyboard=True
     )
 
-# Сопоставление русских названий с ключами
+
 task_type_mapping = {
     "Сегодня": "today",
     "Завтра": "tomorrow",
     "Неделя": "week"
 }
 
-# Уведомление о дедлайне
+
 async def send_deadline_reminder(user_id: int, task: str):
     await bot.send_message(user_id, f"⏰ Напоминание: завтра дедлайн по задаче '{task}'")
 
-# Команда /start
+
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     user_id = message.from_user.id
@@ -73,7 +73,7 @@ async def cmd_start(message: types.Message):
         parse_mode="HTML"
     )
 
-# Обработчики кнопок
+
 @dp.message(lambda message: message.text == "📝 Добавить задачу")
 async def add_task_start(message: types.Message):
     await message.answer(
@@ -201,7 +201,7 @@ async def back_to_main(message: types.Message):
         reply_markup=get_main_keyboard()
     )
 
-# Корректное завершение работы
+
 async def shutdown():
     await bot.session.close()
     scheduler.shutdown()
